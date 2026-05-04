@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADSforge</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body,#root{min-height:100vh}body{background:#08090d;font-family:'Outfit',system-ui,sans-serif;color:#e2e8f0}body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(56,189,248,.06) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(168,85,247,.05) 0%,transparent 60%)}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:10px}@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}</style>
+</head>
+<body><div id="root"></div>
+<script type="text/babel">
+const{useState,useCallback}=React;
+const CC=[{n:"Albania",c:"AL",l:"sq"},{n:"Argentina",c:"AR",l:"es"},{n:"Australia",c:"AU",l:"en"},{n:"Austria",c:"AT",l:"de"},{n:"Belarus",c:"BY",l:"be"},{n:"Belgium",c:"BE",l:"nl"},{n:"Bosnia and Herzegovina",c:"BA",l:"bs"},{n:"Brazil",c:"BR",l:"pt"},{n:"Bulgaria",c:"BG",l:"bg"},{n:"Canada",c:"CA",l:"en"},{n:"Chile",c:"CL",l:"es"},{n:"China",c:"CN",l:"zh"},{n:"Colombia",c:"CO",l:"es"},{n:"Croatia",c:"HR",l:"hr"},{n:"Czech Republic",c:"CZ",l:"cs"},{n:"Denmark",c:"DK",l:"da"},{n:"Egypt",c:"EG",l:"ar"},{n:"Estonia",c:"EE",l:"et"},{n:"Finland",c:"FI",l:"fi"},{n:"France",c:"FR",l:"fr"},{n:"Georgia",c:"GE",l:"ka"},{n:"Germany",c:"DE",l:"de"},{n:"Greece",c:"GR",l:"el"},{n:"Hungary",c:"HU",l:"hu"},{n:"India",c:"IN",l:"hi"},{n:"Indonesia",c:"ID",l:"id"},{n:"Ireland",c:"IE",l:"en"},{n:"Israel",c:"IL",l:"he"},{n:"Italy",c:"IT",l:"it"},{n:"Japan",c:"JP",l:"ja"},{n:"Kenya",c:"KE",l:"sw"},{n:"Latvia",c:"LV",l:"lv"},{n:"Lithuania",c:"LT",l:"lt"},{n:"Malaysia",c:"MY",l:"ms"},{n:"Mexico",c:"MX",l:"es"},{n:"Netherlands",c:"NL",l:"nl"},{n:"New Zealand",c:"NZ",l:"en"},{n:"Nigeria",c:"NG",l:"en"},{n:"Norway",c:"NO",l:"no"},{n:"Peru",c:"PE",l:"es"},{n:"Philippines",c:"PH",l:"tl"},{n:"Poland",c:"PL",l:"pl"},{n:"Portugal",c:"PT",l:"pt"},{n:"Romania",c:"RO",l:"ro"},{n:"Russia",c:"RU",l:"ru"},{n:"Saudi Arabia",c:"SA",l:"ar"},{n:"Serbia",c:"RS",l:"sr"},{n:"Singapore",c:"SG",l:"en"},{n:"Slovakia",c:"SK",l:"sk"},{n:"Slovenia",c:"SI",l:"sl"},{n:"South Africa",c:"ZA",l:"en"},{n:"South Korea",c:"KR",l:"ko"},{n:"Spain",c:"ES",l:"es"},{n:"Sweden",c:"SE",l:"sv"},{n:"Switzerland",c:"CH",l:"de"},{n:"Thailand",c:"TH",l:"th"},{n:"Turkey",c:"TR",l:"tr"},{n:"UAE",c:"AE",l:"ar"},{n:"Ukraine",c:"UA",l:"uk"},{n:"United Kingdom",c:"GB",l:"en"},{n:"United States",c:"US",l:"en"},{n:"Vietnam",c:"VN",l:"vi"}];
+const ALANGS=[{c:"en",n:"English"},{c:"ru",n:"Русский"},{c:"de",n:"Deutsch"},{c:"fr",n:"Français"},{c:"es",n:"Español"},{c:"it",n:"Italiano"},{c:"pt",n:"Português"},{c:"nl",n:"Nederlands"},{c:"pl",n:"Polski"},{c:"cs",n:"Čeština"},{c:"hu",n:"Magyar"},{c:"ro",n:"Română"},{c:"bg",n:"Български"},{c:"hr",n:"Hrvatski"},{c:"el",n:"Ελληνικά"},{c:"tr",n:"Türkçe"},{c:"da",n:"Dansk"},{c:"sv",n:"Svenska"},{c:"no",n:"Norsk"},{c:"fi",n:"Suomi"},{c:"uk",n:"Українська"},{c:"ms",n:"Melayu"},{c:"id",n:"Indonesia"},{c:"th",n:"ไทย"},{c:"vi",n:"Việt"},{c:"zh",n:"中文"},{c:"ja",n:"日本語"},{c:"ko",n:"한국어"},{c:"ar",n:"العربية"}];
+const OBJ=[{v:"Sales",l:"Sales — Продажи"},{v:"Leads",l:"Leads — Лиды"},{v:"Website traffic",l:"Traffic — Трафик"},{v:"App promotion",l:"App — Приложение"}];
+const LGO=[{v:"sign_up",l:"Sign up — Регистрация"},{v:"form_ads",l:"Form (ads)"},{v:"form_web",l:"Form (website)"},{v:"phone",l:"Phone calls"}];
+const TONES=[{id:"professional",l:"Профессиональный",i:"💼",h:"деловой"},{id:"friendly",l:"Дружелюбный",i:"😊",h:"тёплый"},{id:"urgent",l:"Срочный",i:"⚡",h:"срочно"},{id:"creative",l:"Креативный",i:"🎨",h:"необычный"},{id:"luxury",l:"Премиум",i:"✨",h:"эксклюзивный"},{id:"casual",l:"Расслабленный",i:"🤙",h:"молодёжный"},{id:"gaming",l:"Игровой",i:"🎮",h:"скачай, установи, геймплей"}];
+const BIDS=[{v:"Maximize clicks",l:"Макс. кликов"},{v:"Maximize Conversions",l:"Макс. конверсий"},{v:"Target CPA",l:"Целевая CPA"},{v:"Manual CPC",l:"Ручная CPC"},{v:"CPC (enhanced)",l:"Улучшенная CPC"}];
+const HEADERS=["Row Type","Action","Campaign status","Campaign ID","Campaign","Campaign type","Networks","Budget","Delivery method","Budget type","Bid strategy type","Bid strategy","Campaign start date","Campaign end date","Language","Location","Exclusion","Devices","Label","Target CPA","Target ROAS","Display URL option","Website description","Target Impression Share","Max CPC Bid Limit for Target IS","Location Goal for Target IS","Tracking template","Final URL suffix","Custom parameter","Inventory type","Campaign subtype","Video ad formats","EU political ads","Ad group","Ad group type","Ad group status","Default max. CPC","Ad type","Ad status","Headline 1","Headline 2","Headline 3","Headline 4","Headline 5","Headline 6","Headline 7","Headline 8","Headline 9","Headline 10","Headline 11","Headline 12","Headline 13","Headline 14","Headline 15","Description 1","Description 2","Description 3","Description 4","Final URL","Path 1","Path 2","Keyword","Criterion Type"];
+const NC=HEADERS.length;
+const si={width:"100%",padding:"9px 12px",fontSize:13,color:"#e2e8f0",background:"rgba(15,23,42,0.8)",border:"1px solid #1e293b",borderRadius:7,outline:"none",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box"};
+const ss={...si,cursor:"pointer"};const scc={background:"rgba(15,23,42,0.5)",border:"1px solid rgba(51,65,85,0.4)",borderRadius:14,padding:"24px 22px",animation:"fadeUp .4s ease"};
+const cb=(l,m)=>({flexShrink:0,fontSize:10,fontFamily:"'JetBrains Mono'",padding:"2px 6px",borderRadius:4,background:l>m?"rgba(239,68,68,.2)":"rgba(34,197,94,.1)",color:l>m?"#ef4444":"#22c55e",fontWeight:600});
+function ST({i,t}){return <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:18}}><span style={{fontSize:18}}>{i}</span><h2 style={{fontSize:16,fontWeight:700,margin:0}}>{t}</h2></div>}
+function F({l,r,s,children}){return <div style={{marginBottom:14}}><label style={{display:"block",fontSize:11.5,fontWeight:500,color:"#94a3b8",marginBottom:5}}>{l}{r&&<span style={{color:"#f43f5e"}}> *</span>}{s&&<span style={{color:"#475569"}}> — {s}</span>}</label>{children}</div>}
+function In({value,onChange,style,...p}){return <input value={value} onChange={e=>onChange(e.target.value)} style={{...si,...style}} {...p}/>}
+function Ta({value,onChange,...p}){return <textarea value={value} onChange={e=>onChange(e.target.value)} style={{...si,resize:"vertical",minHeight:50,fontFamily:"inherit"}} {...p}/>}
+function Bt({children,onClick,accent,small,full,disabled,color,style}){return <button onClick={onClick} disabled={disabled} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:8,padding:small?"8px 14px":"12px 20px",fontSize:small?12:13.5,fontWeight:600,fontFamily:"inherit",border:accent||color?"none":"1px solid #1e293b",borderRadius:8,cursor:disabled?"not-allowed":"pointer",opacity:disabled ? .5 : 1,background:color||(accent?"linear-gradient(135deg,#d4a574,#c4956a)":"rgba(30,41,59,0.6)"),color:"#fff",width:full?"100%":"auto",transition:"all .2s",...style}}>{children}</button>}
+function Nv({onPrev,onNext}){return <div style={{display:"flex",justifyContent:"space-between",marginTop:24,paddingTop:16,borderTop:"1px solid #1e293b"}}>{onPrev?<Bt onClick={onPrev}>← Назад</Bt>:<div/>}{onNext?<Bt onClick={onNext} accent>Далее →</Bt>:<div/>}</div>}
+function toStr(v){if(v==null)return"";if(typeof v==="string")return v;if(typeof v==="object")return v.text||v.content||JSON.stringify(v);return String(v);}
+
+function App(){
+const[step,setStep]=useState(0),[ld,setLd]=useState(false),[lm,setLm]=useState("");
+const[brand,setBrand]=useState(""),[url,setUrl]=useState(""),[niche,setNiche]=useState(""),[sa,setSa]=useState(null);
+const[al,setAl]=useState("en"),[tone,setTone]=useState("professional"),[hp,setHp]=useState(""),[dp,setDp]=useState(""),[hl,setHl]=useState([]),[dsc,setDsc]=useState([]);
+const[cn,setCn]=useState(""),[obj,setObj2]=useState("Leads"),[lgo,setLgo]=useState("sign_up");
+const[co,setCo]=useState("US"),[bu,setBu]=useState("20.00"),[bs,setBs]=useState("Maximize clicks");
+const[sd,setSd]=useState(""),[ed,setEd]=useState(""),[kw,setKw]=useState("");
+const[tc,setTc]=useState(""),[maxCpc,setMaxCpc]=useState(""),[eu,setEu]=useState("No"),[exported,setExported]=useState(false);
+const selC=CC.find(c=>c.c===co)||CC[0];
+const getCN=()=>cn||`AI_${brand||"Brand"}_Campaign`;
+const getAGN=()=>`AdGroup_${brand||"Brand"}`;
+const E=()=>new Array(NC).fill("");
+const canGenerateAssets=Boolean(brand||niche);
+const hasLongDescriptions=dsc.some(d=>d.length>90);
+const canExport=Boolean(hl.length&&url&&brand&&!hasLongDescriptions);
+
+/* Languages for campaign: always geo + en */
+const getCampLangs=()=>{
+  const lngs=new Set();
+  lngs.add(selC.l); // geo language
+  lngs.add("en");   // always English
+  return[...lngs].join("; ");
+};
+
+const ai=useCallback(async(p)=>{const res=await fetch("/api/anthropic/messages",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({prompt:p,max_tokens:1024})});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||("Ошибка: "+res.status));return(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim();},[]);
+const parseObj=(raw)=>{let s=raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();try{return JSON.parse(s);}catch{}const m=s.match(/\{[\s\S]*\}/);if(m){try{return JSON.parse(m[0]);}catch{}}return null;};
+const extractStrings=(raw)=>{const p=parseObj(raw);let arr=null;if(p&&typeof p==="object"){for(const v of Object.values(p)){if(Array.isArray(v)){arr=v;break;}}}if(!arr){let s=raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();try{const q=JSON.parse(s);if(Array.isArray(q))arr=q;}catch{}if(!arr){const m=s.match(/\[[\s\S]*\]/);if(m)try{arr=JSON.parse(m[0]);}catch{}}}return arr?arr.map(toStr):null;};
+
+const doAnalyze=useCallback(async()=>{if(!url)return;setLd(true);setLm("Claude анализирует...");try{const r=await ai("Проанализируй сайт для Google Ads.\nБренд: "+(brand||"?")+"\nURL: "+url+"\n\nJSON: {\"summary\":\"описание\",\"niche\":\"ниша\",\"usp\":\"УТП\"}");const p=parseObj(r);if(p){setSa(p);if(!niche&&p.niche)setNiche(p.niche);}else setSa({summary:r});}catch(e){alert(e.message);}setLd(false);},[url,brand,niche,ai]);
+
+const doGen=useCallback(async()=>{
+  setLd(true);setLm("Claude генерирует заголовки...");
+  const tO=TONES.find(t=>t.id===tone),langName=ALANGS.find(l=>l.c===al)?.n||"English";
+  let gE="";if(tone==="gaming")gE='\nИспользуй: Скачай, Установи, Играй, Наслаждайся, Геймплей, Топ игра, Присоединяйся, Бесплатно, Эпические битвы, Прокачай героя, Довольные игроки.';
+  const ctx="Бренд: "+brand+"\nНиша: "+niche+"\nURL: "+url+"\nСтрана: "+selC.n+"\nТон: "+(tO?.l||"")+gE+(sa?"\nАнализ: "+(sa.summary||""):"");
+  try{
+    const hR=await ai(ctx+"\n\n"+(hp?"Доп: "+hp+"\n":"")+"Создай 15 заголовков Google Ads на "+langName+".\n\nПРАВИЛА:\n- Каждый МАКСИМУМ 30 символов\n- ЗАКОНЧЕННАЯ фраза, не обрезай — перепиши короче\n- Бренд в 3-5, CTA в 3-4\n- Первый заголовок — самый сильный и короткий\n\nJSON: {\"headlines\":[\"текст1\",\"текст2\",...]}");
+    let headlines=extractStrings(hR);
+    if(!headlines||!headlines.length){alert("Ошибка заголовков:\n"+hR.substring(0,500));setLd(false);return;}
+    headlines=headlines.map(h=>{const s=toStr(h);if(s.length<=30)return s;const c=s.lastIndexOf(" ",30);return c>10?s.substring(0,c):s.substring(0,30);});
+    if(headlines[0]&&!headlines[0].startsWith("{Keyword:")){headlines[0]="{Keyword:"+headlines[0]+"}";}
+    setHl(headlines);
+
+    setLm("Claude генерирует описания...");
+    const dR=await ai(ctx+"\n\n"+(dp?"Доп: "+dp+"\n":"")+"Создай 4 описания Google Ads на "+langName+".\n\nСТРОГИЕ ПРАВИЛА:\n- Каждое СТРОГО до 90 символов (НЕ больше!)\n- ЗАКОНЧЕННОЕ предложение с точкой или !\n- НИКОГДА не обрезай и не ставь ...\n- УТП + CTA\n- ПОСЧИТАЙ символы!\n\nJSON: {\"descriptions\":[\"текст1\",\"текст2\",\"текст3\",\"текст4\"]}");
+    let descs=extractStrings(dR);
+    if(!descs||!descs.length){alert("Ошибка описаний:\n"+dR.substring(0,500));setLd(false);return;}
+    descs=descs.map(d=>toStr(d));
+    if(descs.some(d=>d.length>90))alert("⚠ Описания превышают 90 символов. Нажмите «Перегенерировать».");
+    setDsc(descs);
+  }catch(e){alert(e.message);}setLd(false);
+},[brand,niche,url,al,tone,hp,dp,sa,selC,ai]);
+
+const doKw=useCallback(async()=>{setLd(true);setLm("Claude подбирает слова...");try{const r=await ai("Подбери ключевые слова для Google Ads.\nБренд: "+brand+"\nНиша: "+niche+"\nURL: "+url+"\nСтрана: "+selC.n+"\nЯзык: "+(ALANGS.find(l=>l.c===al)?.n||"English")+(sa?"\nАнализ: "+(sa.summary||""):"")+"\n\nJSON: {\"keywords\":[\"слово1\",\"слово2\",...]}");const p=parseObj(r);if(p&&p.keywords)setKw(p.keywords.map(toStr).join(", "));else alert("Ошибка:\n"+r.substring(0,300));}catch(e){alert(e.message);}setLd(false);},[brand,niche,url,al,selC,sa,ai]);
+
+const doExport=useCallback(()=>{
+  const bNum=parseFloat(bu)||20;
+  const campName=getCN(),agName=getAGN();
+  const rows=[HEADERS];
+  const cR=E();
+  cR[2]="Paused";cR[4]=campName;cR[5]="Search";cR[6]="Google search; Search partners";
+  cR[7]=bNum;cR[8]="Standard";cR[9]="Daily";cR[10]=bs;
+  if(sd)cR[12]=sd;if(ed)cR[13]=ed;
+  cR[14]=getCampLangs(); // always geo + en
+  cR[15]=selC.n;
+  if(tc&&bs==="Target CPA")cR[19]=parseFloat(tc);
+  cR[32]=eu;
+  rows.push(cR);
+  const agR=E();
+  agR[0]="Ad group";agR[4]=campName;agR[33]=agName;agR[34]="Standard";agR[35]="Enabled";
+  if(maxCpc)agR[36]=parseFloat(maxCpc);
+  rows.push(agR);
+  const adR=E();
+  adR[4]=campName;adR[33]=agName;adR[37]="Responsive search ad";adR[38]="Enabled";
+  for(let i=0;i<15;i++)adR[39+i]=toStr(hl[i]||"");
+  for(let i=0;i<4;i++)adR[54+i]=toStr(dsc[i]||"");
+  adR[58]=url;
+  rows.push(adR);
+  kw.split(",").map(k=>k.trim()).filter(Boolean).forEach(k=>{
+    const r=E();r[4]=campName;r[33]=agName;r[61]=k;r[62]="Broad";rows.push(r);
+  });
+  const wb=XLSX.utils.book_new();const ws=XLSX.utils.aoa_to_sheet(rows);
+  const bc=XLSX.utils.encode_cell({r:1,c:7});if(ws[bc]){ws[bc].t='n';ws[bc].v=bNum;ws[bc].z='0.00';}
+  if(maxCpc){const mc=XLSX.utils.encode_cell({r:2,c:36});if(ws[mc]){ws[mc].t='n';ws[mc].v=parseFloat(maxCpc);ws[mc].z='0.00';}}
+  if(tc&&bs==="Target CPA"){const tc2=XLSX.utils.encode_cell({r:1,c:19});if(ws[tc2]){ws[tc2].t='n';ws[tc2].v=parseFloat(tc);ws[tc2].z='0.00';}}
+  ws["!cols"]=HEADERS.map((_,i)=>({wch:i===4?30:i===6?30:i===15?28:i===33?24:(i>=39&&i<=53)?32:(i>=54&&i<=57)?50:i===58?40:i===61?30:16}));
+  XLSX.utils.book_append_sheet(wb,ws,"Sheet0");
+  XLSX.writeFile(wb,campName.replace(/\s+/g,"_")+"_GoogleAds.xlsx");
+  setExported(true);setTimeout(()=>setExported(false),4000);
+},[brand,url,al,cn,co,selC,bu,bs,sd,ed,kw,tc,maxCpc,eu,hl,dsc]);
+
+const sN=["Бренд и ассеты","Кампания","Экспорт"];
+return(<div style={{position:"relative",zIndex:1}}>
+{ld&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(8,9,13,.85)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:16}}><div style={{width:44,height:44,border:"3px solid #1e293b",borderTopColor:"#d4a574",borderRadius:"50%",animation:"spin .7s linear infinite"}}/><p style={{color:"#94a3b8",fontSize:14}}>{lm}</p></div>}
+<div style={{maxWidth:860,margin:"0 auto",padding:"24px 20px 60px"}}>
+  <header style={{textAlign:"center",marginBottom:24}}><div style={{display:"inline-flex",alignItems:"center",gap:10,marginBottom:6}}><div style={{width:38,height:38,borderRadius:10,background:"linear-gradient(135deg,#d4a574,#c4956a)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:800,color:"#fff"}}>A</div><h1 style={{fontSize:28,fontWeight:800,margin:0,background:"linear-gradient(135deg,#d4a574,#e8b98a)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>ADS<span style={{background:"linear-gradient(135deg,#e8b98a,#f0c8a0)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>forge</span></h1></div><p style={{color:"#64748b",fontSize:13}}>Генератор Google Ads · <b style={{color:"#d4a574"}}>Claude AI</b></p></header>
+
+  <div style={{display:"flex",gap:4,marginBottom:28}}>{sN.map((s,i)=><button key={i} onClick={()=>setStep(i)} style={{flex:1,padding:"10px 6px",background:i===step?"rgba(212,165,116,.1)":"rgba(30,41,59,.4)",border:`1px solid ${i===step?"rgba(212,165,116,.3)":"rgba(51,65,85,.4)"}`,borderRadius:8,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4}}><span style={{width:22,height:22,borderRadius:"50%",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",background:i===step?"#d4a574":i<step?"#22c55e":"#1e293b",color:i<=step?"#fff":"#64748b"}}>{i<step?"✓":i+1}</span><span style={{fontSize:10.5,fontWeight:i===step?600:400,color:i===step?"#d4a574":"#64748b"}}>{s}</span></button>)}</div>
+
+  {/* ═══ STEP 0: Brand + Assets (merged) ═══ */}
+  {step===0&&<div style={scc}>
+    <ST i="🏢" t="Бренд, сайт и ассеты"/>
+    <F l="Название бренда" r><In value={brand} onChange={setBrand} placeholder="TechVision Pro"/></F>
+    <F l="URL сайта" r s="анализ + Final URL"><div style={{display:"flex",gap:8}}><In value={url} onChange={setUrl} placeholder="https://example.com" style={{flex:1}}/><Bt onClick={doAnalyze} small accent disabled={!url}>🔍</Bt></div></F>
+    {sa&&<div style={{padding:14,background:"rgba(212,165,116,.05)",border:"1px solid rgba(212,165,116,.15)",borderRadius:10,marginBottom:16,fontSize:12.5,color:"#94a3b8",lineHeight:1.7}}><div style={{color:"#d4a574",fontWeight:600,marginBottom:6}}>✦ Анализ</div>{sa.summary&&<p style={{margin:"0 0 6px"}}>{sa.summary}</p>}{sa.niche&&<p style={{margin:"0 0 4px"}}><b style={{color:"#e2e8f0"}}>Ниша:</b> {sa.niche}</p>}{sa.usp&&<p style={{margin:0}}><b style={{color:"#e2e8f0"}}>УТП:</b> {sa.usp}</p>}</div>}
+    <F l="Ниша"><In value={niche} onChange={setNiche} placeholder="Мобильная игра, IT..."/></F>
+
+    <div style={{borderTop:"1px solid #1e293b",margin:"16px 0",paddingTop:16}}/>
+    <ST i="✦" t="Генерация ассетов"/>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+      <F l="Язык объявления"><select value={al} onChange={e=>setAl(e.target.value)} style={ss}>{ALANGS.map(l=><option key={l.c} value={l.c}>{l.n}</option>)}</select></F>
+      <F l="Тон"><select value={tone} onChange={e=>setTone(e.target.value)} style={ss}>{TONES.map(t=><option key={t.id} value={t.id}>{t.i} {t.l}</option>)}</select></F>
+    </div>
+    <F l="Промпт заголовков" s="необязат."><Ta value={hp} onChange={setHp} rows={2} placeholder="Фокус на графику..."/></F>
+    <F l="Промпт описаний" s="необязат."><Ta value={dp} onChange={setDp} rows={2} placeholder="Рейтинг 4.8★..."/></F>
+    <Bt onClick={doGen} accent full disabled={!canGenerateAssets}>✦ Сгенерировать ассеты</Bt>
+
+    {hl.length>0&&<div style={{marginTop:20}}>
+      <div style={{color:"#22c55e",fontWeight:700,fontSize:11,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Заголовки ({hl.length}) — макс 30</div>
+      {hl.map((h,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:i===0?"rgba(56,189,248,.08)":"rgba(15,23,42,.6)",borderRadius:6,marginBottom:4,fontSize:12.5,border:i===0?"1px solid rgba(56,189,248,.2)":"none"}}><span style={{width:22,height:22,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",background:i===0?"rgba(56,189,248,.2)":"rgba(212,165,116,.15)",color:i===0?"#38bdf8":"#d4a574",fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono'"}}>{i+1}</span><span style={{flex:1}}>{h}</span>{i===0&&<span style={{fontSize:10,color:"#38bdf8",fontWeight:600}}>Keyword</span>}<span style={cb(h.length,30)}>{h.length}/30</span></div>)}
+      <div style={{color:"#22c55e",fontWeight:700,fontSize:11,letterSpacing:1,textTransform:"uppercase",margin:"16px 0 8px"}}>Описания ({dsc.length}) — макс 90</div>
+      {dsc.map((d,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:"rgba(15,23,42,.6)",borderRadius:6,marginBottom:4,fontSize:12.5,border:d.length>90?"1px solid rgba(239,68,68,.3)":"none"}}><span style={{width:22,height:22,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(212,165,116,.15)",color:"#d4a574",fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono'"}}>{i+1}</span><span style={{flex:1}}>{d}</span><span style={cb(d.length,90)}>{d.length}/90</span></div>)}
+      {hasLongDescriptions&&<div style={{padding:8,background:"rgba(239,68,68,.1)",borderRadius:6,color:"#ef4444",fontSize:12,marginTop:6}}>⚠ Описания превышают 90 символов — нажмите «Перегенерировать»</div>}
+      <Bt onClick={doGen} small style={{marginTop:10}}>↻ Перегенерировать</Bt>
+    </div>}
+    <Nv onNext={()=>setStep(1)}/></div>}
+
+  {/* ═══ STEP 1: Campaign settings ═══ */}
+  {step===1&&<div style={scc}><ST i="⚙️" t="Настройка кампании"/>
+    <F l="Название кампании"><In value={cn} onChange={setCn} placeholder={`AI_${brand||"Brand"}_Campaign`}/></F>
+    <F l="Цель (Objective)"><select value={obj} onChange={e=>setObj2(e.target.value)} style={ss}>{OBJ.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}</select></F>
+    {obj==="Leads"&&<F l="Подцель"><select value={lgo} onChange={e=>setLgo(e.target.value)} style={ss}>{LGO.map(g=><option key={g.v} value={g.v}>{g.l}</option>)}</select></F>}
+    <F l="Тип"><div style={{...si,background:"rgba(212,165,116,.08)",color:"#d4a574",fontWeight:600,cursor:"default"}}>Search — Поисковая</div></F>
+    <F l="Final URL"><div style={{...si,background:"rgba(34,197,94,.06)",color:"#22c55e",cursor:"default"}}>{url||"⚠ шаг 1"}</div></F>
+    <F l="Страна" r><select value={co} onChange={e=>setCo(e.target.value)} style={ss}>{CC.map(c=><option key={c.c} value={c.c}>{c.n}</option>)}</select>
+      <p style={{fontSize:11,color:"#64748b",marginTop:4}}>Языки в кампании: <b style={{color:"#94a3b8"}}>{getCampLangs()}</b> (гео + English — всегда)</p>
+    </F>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+      <F l="Бюджет/день ($)" r><In value={bu} onChange={setBu} placeholder="20.00"/></F>
+      <F l="Стратегия ставок" r><select value={bs} onChange={e=>setBs(e.target.value)} style={ss}>{BIDS.map(s=><option key={s.v} value={s.v}>{s.l}</option>)}</select></F>
+      <F l="Макс. CPC ($)"><In value={maxCpc} onChange={setMaxCpc} placeholder="1.50"/></F>
+    </div>
+    {bs==="Target CPA"&&<F l="Целевая CPA ($)"><In value={tc} onChange={setTc} placeholder="10.00"/></F>}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}><F l="Дата начала"><In value={sd} onChange={setSd} type="date"/></F><F l="Дата окончания"><In value={ed} onChange={setEd} type="date"/></F></div>
+    <F l="Полит. реклама ЕС"><select value={eu} onChange={e=>setEu(e.target.value)} style={ss}><option value="No">No</option><option value="Yes">Yes</option></select></F>
+    <div style={{borderTop:"1px solid #1e293b",margin:"16px 0",paddingTop:16}}><ST i="🔑" t="Ключевые слова"/><F l="Ключевые слова"><Ta value={kw} onChange={setKw} rows={3} placeholder="слово 1, слово 2..."/></F><Bt onClick={doKw} small accent disabled={!canGenerateAssets} style={{marginBottom:12}}>✦ Claude: подобрать</Bt></div>
+    <Nv onPrev={()=>setStep(0)} onNext={()=>setStep(2)}/></div>}
+
+  {/* ═══ STEP 2: Export ═══ */}
+  {step===2&&<div style={scc}><ST i="📥" t="Экспорт — 1 файл"/>
+    <div style={{background:"#fff",borderRadius:10,padding:16,marginBottom:20,fontFamily:"Arial,sans-serif"}}><div style={{fontSize:10,color:"#999",fontWeight:600,letterSpacing:1,textTransform:"uppercase",marginBottom:10}}>Предпросмотр</div><span style={{fontSize:11,fontWeight:700,color:"#202124",background:"#f1f3f4",padding:"1px 6px",borderRadius:3}}>Реклама</span><div style={{fontSize:12,color:"#202124",marginTop:4}}>{url?.replace(/^https?:\/\//,"").replace(/\/$/,"")||"example.com"}</div><div style={{fontSize:18,color:"#1a0dab",lineHeight:1.3,margin:"4px 0"}}>{hl.length>=3?hl.slice(0,3).join(" | "):hl[0]||"Заголовок"}</div><div style={{fontSize:13,color:"#4d5156",lineHeight:1.45}}>{dsc[0]||"Описание."}</div></div>
+
+    <div style={{border:"1px solid #1e293b",borderRadius:10,overflow:"hidden",marginBottom:16,fontSize:12}}>
+      <div style={{padding:"8px 14px",background:"rgba(30,41,59,.6)",fontWeight:600,fontSize:11,color:"#64748b",textTransform:"uppercase"}}>1 файл xlsx</div>
+      {[["Campaign","Paused · Search · "+selC.n+" · "+getCampLangs()],["Ad Group",getAGN()+(maxCpc?" · CPC $"+maxCpc:"")],["RSA",hl.length+" загол. + "+dsc.length+" описаний + URL"],["Keywords",kw?kw.split(",").filter(k=>k.trim()).length+" слов":"нет"]].map(([k,v],i)=><div key={i} style={{display:"flex",padding:"7px 14px",borderBottom:"1px solid rgba(30,41,59,.5)",background:i%2?"rgba(15,23,42,.3)":"transparent"}}><span style={{width:90,color:"#64748b",fontWeight:500,flexShrink:0}}>{k}</span><span style={{color:"#e2e8f0"}}>{v}</span></div>)}
+    </div>
+
+    <div style={{padding:"10px 14px",background:"rgba(251,191,5,0.06)",border:"1px solid rgba(251,191,5,0.15)",borderRadius:8,fontSize:12,color:"#94a3b8",marginBottom:16,lineHeight:1.7}}>
+      <b style={{color:"#fbbf24"}}>После загрузки:</b> Кампания → Настройки → Marketing Objective → <b>{OBJ.find(o=>o.v===obj)?.l}{obj==="Leads"?" → "+LGO.find(g=>g.v===lgo)?.l:""}</b>
+    </div>
+
+    {(!hl.length||!dsc.length)&&<div style={{padding:12,background:"rgba(251,191,5,.1)",borderRadius:8,color:"#fbbf24",fontSize:13,marginBottom:12}}>⚠ Нет ассетов! Шаг 1</div>}
+    {hasLongDescriptions&&<div style={{padding:12,background:"rgba(239,68,68,.1)",borderRadius:8,color:"#ef4444",fontSize:13,marginBottom:12}}>⚠ Описания больше 90 символов. Перегенерируйте на шаге 1.</div>}
+
+    <button onClick={doExport} disabled={!canExport} style={{width:"100%",padding:"16px",fontSize:16,fontWeight:700,fontFamily:"inherit",border:"none",borderRadius:10,cursor:canExport?"pointer":"not-allowed",opacity:canExport?1:.5,background:"linear-gradient(135deg,#22c55e,#16a34a)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 4px 20px rgba(34,197,94,.3)"}}>📥 Скачать .xlsx</button>
+
+    {exported&&<div style={{padding:12,background:"rgba(34,197,94,.1)",border:"1px solid rgba(34,197,94,.3)",borderRadius:8,color:"#22c55e",fontSize:12,textAlign:"center",fontWeight:500,marginTop:12}}>✓ Google Ads → Инструменты → Загрузки</div>}
+    <Nv onPrev={()=>setStep(1)}/></div>}
+</div></div>);
+}
+ReactDOM.render(<App/>,document.getElementById("root"));
+</script>
+</body>
+</html>
