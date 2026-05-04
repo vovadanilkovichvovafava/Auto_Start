@@ -123,5 +123,5 @@ class AppHandler(SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
     server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
-    print(f"Server running at http://0.0.0.0:{port}")
+    print(f"Server running at http://0.0.0.0:{port}", flush=True)
     server.serve_forever()
