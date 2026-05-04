@@ -1,5 +1,7 @@
 import json
 import os
+import sys
+import traceback
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -121,7 +123,13 @@ class AppHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "8000"))
-    server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
-    print(f"Server running at http://0.0.0.0:{port}", flush=True)
-    server.serve_forever()
+    try:
+        port = int(os.environ.get("PORT", "8000"))
+        print(f"[boot] starting on 0.0.0.0:{port}", flush=True)
+        server = ThreadingHTTPServer(("0.0.0.0", port), AppHandler)
+        print(f"[boot] listening on http://0.0.0.0:{port}", flush=True)
+        server.serve_forever()
+    except Exception:
+        print("[boot] fatal error:", file=sys.stderr, flush=True)
+        traceback.print_exc()
+        sys.exit(1)
